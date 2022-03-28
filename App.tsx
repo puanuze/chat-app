@@ -1,17 +1,13 @@
 import React from 'react';
 import {
   SafeAreaView,
-  ScrollView,
   StatusBar,
   StyleSheet,
-  Text,
   useColorScheme,
   View,
 } from 'react-native';
-
 import {Colors} from 'react-native/Libraries/NewAppScreen';
-import ChatInput from './src/components/ChatInput';
-import Message from './src/components/Message';
+import Conversation from './src/screens/Conversation';
 
 const App = () => {
   const isDarkMode = useColorScheme() === 'dark';
@@ -21,20 +17,14 @@ const App = () => {
   };
 
   return (
-    <SafeAreaView style={backgroundStyle}>
+    <SafeAreaView style={[{flex: 1}, backgroundStyle]}>
       <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-            <Message time={new Date().toLocaleTimeString()} message="Hey this is message from your friend" isLeft={true} />
-          <Message message="Hey this is message from your friend" />
-          <ChatInput></ChatInput>
-        </View>
-      </ScrollView>
+      <View
+        style={{
+          flex: 1,
+        }}>
+        <Conversation />
+      </View>
     </SafeAreaView>
   );
 };

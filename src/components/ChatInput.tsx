@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import {IconButton} from 'react-native-paper';
 
-const ChatInput = () => {
+export const ChatInput = ({}: any) => {
   const [message, setMessage] = useState('');
 
   return (
@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: 'white',
     borderTopColor: '#171717',
-    borderTopWidth: .5,
+    borderTopWidth: 0.5,
   },
   innerContainer: {
     paddingHorizontal: 10,
@@ -66,5 +66,3 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
 });
-
-export default ChatInput;
