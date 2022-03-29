@@ -4,7 +4,7 @@ import {ChatInput, Header, MessagesList} from '../components';
 
 const messages: any[] = [];
 
-const Conversation = () => {
+export const Conversation = () => {
   return (
     <View style={{flex: 1, flexDirection: 'column'}}>
       <Header style={{flex: 0.1}} />
@@ -13,5 +13,3 @@ const Conversation = () => {
     </View>
   );
 };
-
-export default Conversation;
