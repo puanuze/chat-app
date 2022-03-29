@@ -8,8 +8,9 @@ import {
 import {Colors} from 'react-native/Libraries/NewAppScreen';
 import {NavigationContainer} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {ContactScreen, ChatsScreen} from './src/screens';
+import {ChatsScreen} from './src/screens';
 import {IconButton} from 'react-native-paper';
+import {ContactNavigator} from './src/navigators/Contact';
 
 const Tab = createBottomTabNavigator();
 
@@ -44,7 +45,11 @@ const App = () => {
             },
           })}>
           <Tab.Screen name="Chats" component={ChatsScreen} />
-          <Tab.Screen name="Contacts" component={ContactScreen} />
+          <Tab.Screen
+            options={{headerShown: false}}
+            name="Contacts"
+            component={ContactNavigator}
+          />
         </Tab.Navigator>
       </NavigationContainer>
     </SafeAreaView>

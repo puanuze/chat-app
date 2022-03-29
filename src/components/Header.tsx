@@ -2,16 +2,16 @@ import React from 'react';
 import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import {IconButton} from 'react-native-paper';
 
-export const Header = ({}: any) => {
+export const ChatHeader = ({name, onBackPress}: any) => {
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={() => console.log('')}>
+      <TouchableOpacity onPress={onBackPress}>
         <IconButton icon="arrow-left" size={30} color="white" />
       </TouchableOpacity>
       <View style={styles.profileOptions}>
         <TouchableOpacity>
           <View>
-            <Text style={styles.username}>{'User Name'}</Text>
+            <Text style={styles.username}>{name}</Text>
             <Text style={styles.onlineStatus}>{'Online'}</Text>
           </View>
         </TouchableOpacity>
