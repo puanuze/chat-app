@@ -1,20 +1,9 @@
 import React from 'react';
-import {
-  SafeAreaView,
-  StatusBar,
-  StyleSheet,
-  useColorScheme,
-} from 'react-native';
+import {SafeAreaView, StatusBar, useColorScheme} from 'react-native';
 import {Colors} from 'react-native/Libraries/NewAppScreen';
-import {NavigationContainer} from '@react-navigation/native';
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {ChatsScreen} from './src/screens';
-import {IconButton} from 'react-native-paper';
-import {ContactNavigator} from './src/navigators/Contact';
+import App from './src';
 
-const Tab = createBottomTabNavigator();
-
-const App = () => {
+const Main = () => {
   const isDarkMode = useColorScheme() === 'dark';
 
   const backgroundStyle = {
@@ -24,38 +13,9 @@ const App = () => {
   return (
     <SafeAreaView style={[{flex: 1}, backgroundStyle]}>
       <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-
-      <NavigationContainer>
-        <Tab.Navigator
-          screenOptions={({route}) => ({
-            tabBarIcon: ({focused}) => {
-              const iconMap: {[key: string]: string} = {
-                Chats: 'android-messages',
-                Contacts: 'contacts',
-              };
-
-              let iconColor = 'gray';
-              if (focused) {
-                iconColor = 'blue';
-              }
-
-              return (
-                <IconButton icon={iconMap[route.name]} color={iconColor} />
-              );
-            },
-          })}>
-          <Tab.Screen name="Chats" component={ChatsScreen} />
-          <Tab.Screen
-            options={{headerShown: false}}
-            name="Contacts"
-            component={ContactNavigator}
-          />
-        </Tab.Navigator>
-      </NavigationContainer>
+      <App />
     </SafeAreaView>
   );
 };
 
-const styles = StyleSheet.create({});
-
-export default App;
+export default Main;
