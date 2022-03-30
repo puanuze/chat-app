@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import {IconButton} from 'react-native-paper';
 
-export const ChatInput = ({}: any) => {
+export const ChatInput = ({onSend}: any) => {
   const [message, setMessage] = useState('');
 
   return (
@@ -17,7 +17,7 @@ export const ChatInput = ({}: any) => {
         <View style={styles.inputContainer}>
           <TextInput
             multiline
-            placeholder={'Message...'}
+            placeholder={'Your Message...'}
             style={styles.input}
             value={message}
             onChangeText={text => setMessage(text)}
@@ -25,7 +25,7 @@ export const ChatInput = ({}: any) => {
         </View>
         <TouchableOpacity
           onPress={() => {
-            // send message to other user
+            onSend(message);
             setMessage('');
           }}>
           <IconButton icon="send" color="#8250df" />

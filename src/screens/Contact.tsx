@@ -1,44 +1,69 @@
-import React, {useState} from 'react';
-import {FlatList, StyleSheet, Text, TouchableOpacity} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {ContactUser, userService} from '../service/store';
+import {Navigation} from '../types';
 
-const Item = ({id, name, onPress}: any) => (
+type Props = {
+  navigation: Navigation;
+};
+
+const Item = ({name, onPress}: any) => (
   <TouchableOpacity style={styles.item} onPress={onPress}>
     <Text style={styles.title}>{name}</Text>
   </TouchableOpacity>
 );
 
-export const ContactScreen = ({navigation}: any) => {
+export const ContactScreen = ({navigation}: Props) => {
   const renderItem = ({item}: any) => (
     <Item
+      key={item.id}
       id={item.id}
-      name={item.name}
+      name={item.username}
       onPress={() =>
-        navigation.navigate('Conversation', {id: item.id, name: item.name})
+        navigation.navigate('Conversation', {id: item.id, name: item.username})
       }
     />
   );
-  const [users, setUsers] = useState<{id: string; name: string}[]>([
-    {id: '123', name: 'User 1'},
-  ]);
+  const [users, setUsers] = useState<ContactUser[]>();
+
+  useEffect(() => {
+    const subscription = userService.getOnlineUsers().subscribe(res => {
+      setUsers(res);
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
 
   return (
-    <FlatList
-      style={styles.container}
-      data={users}
-      renderItem={renderItem}
-      keyExtractor={item => item.id}
-    />
+    <View style={styles.container}>
+      <Text style={styles.headerText}>Active Users</Text>
+      <FlatList
+        data={users}
+        renderItem={renderItem}
+        keyExtractor={item => item.id}
+      />
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     backgroundColor: 'white',
+    flex: 1,
+  },
+  headerText: {
+    padding: 20,
+    color: 'black',
+    fontSize: 24,
+    fontWeight: 'bold',
   },
   item: {
     padding: 20,
   },
   title: {
     fontSize: 18,
+    color: 'black',
   },
 });

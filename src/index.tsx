@@ -2,8 +2,8 @@ import React, {useEffect, useState} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {ContactNavigator} from './navigators/Contact';
-import {RegisterScreen} from './screens/Register';
-import userService from './service/User';
+import {userService} from './service/store';
+import {AuthNavigator} from './navigators/Auth';
 
 const App = () => {
   const Stack = createNativeStackNavigator();
@@ -16,7 +16,7 @@ const App = () => {
     return () => {
       subscription.unsubscribe();
     };
-  });
+  }, []);
 
   return (
     <NavigationContainer>
@@ -24,8 +24,8 @@ const App = () => {
         {!isUserLoggedIn ? (
           <Stack.Group>
             <Stack.Screen
-              name="App"
-              component={RegisterScreen}
+              name="Auth"
+              component={AuthNavigator}
               options={{headerShown: false}}
             />
           </Stack.Group>

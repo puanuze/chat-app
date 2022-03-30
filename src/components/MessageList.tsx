@@ -1,4 +1,4 @@
-import React, {useState, useRef} from 'react';
+import React from 'react';
 import {ScrollView} from 'react-native';
 
 import Message from './Message';
@@ -10,7 +10,7 @@ export const MessagesList = ({messages}: any) => {
         <Message
           key={index}
           time={message.time}
-          isLeft={true}
+          isLeft={!message.selfSent}
           message={message.content}
         />
       ))}

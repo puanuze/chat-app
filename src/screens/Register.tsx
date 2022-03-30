@@ -1,7 +1,8 @@
 import React, {useState} from 'react';
 import {StyleSheet, View} from 'react-native';
 import {Button, TextInput} from '../components';
-import userService from '../service/User';
+import socket from '../service/socket';
+import {userService} from '../service/store';
 
 export const RegisterScreen = () => {
   const [username, setUsername] = useState('');
@@ -10,6 +11,8 @@ export const RegisterScreen = () => {
     if (!username) {
       return;
     }
+    socket.auth = {username};
+    socket.connect();
     userService.loginUser();
   };
 
