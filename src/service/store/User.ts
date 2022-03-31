@@ -3,6 +3,7 @@ import {BehaviorSubject} from 'rxjs';
 type User = {
   id: string;
   username: string;
+  sessionId: string;
   isLoggedIn: boolean;
 };
 
@@ -12,7 +13,7 @@ export type ContactUser = {
 };
 
 class UserService {
-  private user = {isLoggedIn: false};
+  private user: User = {isLoggedIn: false} as User;
   private onlineUsers: ContactUser[] = [];
   private readonly user$ = new BehaviorSubject(this.user);
   private readonly onlineUsers$ = new BehaviorSubject(this.onlineUsers);
@@ -21,17 +22,26 @@ class UserService {
     return this.user$.asObservable();
   }
 
+  getUserId() {
+    return this.user.id;
+  }
+
+  private updateUserObs() {
+    this.user$.next(this.user);
+  }
+
   getOnlineUsers() {
     return this.onlineUsers$.asObservable();
   }
 
-  private setUser() {
-    this.user$.next(this.user);
+  setUser(user: User) {
+    this.user = {...user};
+    this.updateUserObs();
   }
 
   loginUser() {
     this.user = {...this.user, isLoggedIn: true};
-    this.setUser();
+    this.updateUserObs();
   }
 
   private updateOnlineUsersObs() {

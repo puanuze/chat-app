@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import socket from '../service/socket';
 import {ContactUser, userService} from '../service/store';
 import {Navigation} from '../types';
 
@@ -27,12 +28,18 @@ export const ContactScreen = ({navigation}: Props) => {
   const [users, setUsers] = useState<ContactUser[]>();
 
   useEffect(() => {
+    const userSubscription = userService.getUser().subscribe((res: any) => {
+      socket.auth = {userId: res.userId, sessionId: res.sessionId};
+      socket.connect();
+    });
+
     const subscription = userService.getOnlineUsers().subscribe(res => {
       setUsers(res);
     });
 
     return () => {
       subscription.unsubscribe();
+      userSubscription.unsubscribe()
     };
   }, []);
 

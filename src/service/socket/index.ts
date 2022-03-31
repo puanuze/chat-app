@@ -1,5 +1,6 @@
+import AsyncStorage from '@react-native-community/async-storage';
 import {io} from 'socket.io-client';
-import {userService, ContactUser, messageService} from '../store';
+import {userService, ContactUser, messageService, Message} from '../store';
 
 const URL = 'http://192.168.1.80:5000';
 
@@ -25,6 +26,19 @@ socket.on('users', (users: ContactUser[]) => {
   userService.setOnlineUsers(activeUsers);
 });
 
+socket.on('session', ({sessionId, userId, username}) => {
+  AsyncStorage.setItem(
+    'user-session',
+    JSON.stringify({sessionId, userId, username}),
+  );
+  userService.setUser({
+    id: userId,
+    sessionId,
+    username,
+    isLoggedIn: true,
+  });
+});
+
 socket.on('user connected', user => {
   userService.addOnlineUser(user);
 });
@@ -33,8 +47,8 @@ socket.on('user disconnected', user => {
   userService.removeOnlineUser(user);
 });
 
-socket.on('private message', ({content, from}) => {
-  messageService.addMessagetoUser(from, {content, selfSent: false});
+socket.on('private message', (message: Message) => {
+  messageService.addMessagetoUser(message.sender, message);
 });
 
 export default socket;

@@ -28,10 +28,7 @@ export const RegisterScreen = () => {
         const {
           data: {_id: userId},
         } = await res.json();
-
-        socket.auth = {userId};
-        socket.connect();
-        userService.loginUser();
+        userService.setUser({id: userId, isLoggedIn: true} as any);
       } else {
         let errorResponse = await res.json();
         setErrorMessage(errorResponse.message);

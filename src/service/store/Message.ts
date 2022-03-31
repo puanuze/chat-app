@@ -2,7 +2,9 @@ import {Subject} from 'rxjs';
 
 export type Message = {
   content: string;
-  selfSent: boolean;
+  sender: string;
+  createdAt: string;
+  to: string;
 };
 
 type UserMessage = {
@@ -28,6 +30,18 @@ class MessageService {
 
   setActiveUserId(id: string | null) {
     this.activeUserId = id;
+    this.updateMessageObs();
+  }
+
+  setMessageForUser(userId: string, messages: Message[]) {
+    const newMessages = []
+    this.userMessage = {
+      ...this.userMessage,
+      [userId]: [
+        ...(this.userMessage[userId] ?? []),
+        ...messages,
+      ] as Message[],
+    };
     this.updateMessageObs();
   }
 

@@ -4,19 +4,40 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {ContactNavigator} from './navigators/Contact';
 import {userService} from './service/store';
 import {AuthNavigator} from './navigators/Auth';
+import AsyncStorage from '@react-native-community/async-storage';
+import socket from './service/socket';
+import {View} from 'react-native';
 
 const App = () => {
   const Stack = createNativeStackNavigator();
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
+  const [initializingState, setInitializingState] = useState(true);
+
   useEffect(() => {
     const subscription = userService.getUser().subscribe(res => {
       setIsUserLoggedIn(res.isLoggedIn);
+    });
+
+    AsyncStorage.getItem('user-session').then((res: any) => {
+      if (res) {
+        userService.setUser({...JSON.parse(res), isLoggedIn: true});
+        socket.auth = {
+          userId: res.userId,
+          sessionId: res.sessionId,
+          username: res.username,
+        };
+      }
+      setInitializingState(false);
     });
 
     return () => {
       subscription.unsubscribe();
     };
   }, []);
+
+  if (initializingState) {
+    return <View></View>;
+  }
 
   return (
     <NavigationContainer>
