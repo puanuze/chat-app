@@ -2,8 +2,8 @@ import React, {useState} from 'react';
 import {StyleSheet, View} from 'react-native';
 import {Text} from 'react-native-paper';
 import {Button, TextInput} from '../components';
+import { SERVER_URL } from '../config';
 import {theme} from '../core/theme';
-import socket from '../service/socket';
 import {userService} from '../service/store';
 
 export const RegisterScreen = () => {
@@ -16,7 +16,7 @@ export const RegisterScreen = () => {
     }
 
     try {
-      let res = await fetch('http://192.168.1.80:5000/api/user', {
+      let res = await fetch(`${SERVER_URL}/api/user`, {
         headers: {
           'Content-type': 'application/json; charset=UTF-8',
         },

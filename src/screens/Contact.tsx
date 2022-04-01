@@ -20,16 +20,16 @@ export const ContactScreen = ({navigation}: Props) => {
       key={item.id}
       id={item.id}
       name={item.username}
-      onPress={() =>
-        navigation.navigate('Conversation', {id: item.id, name: item.username})
-      }
+      onPress={() => {
+        navigation.navigate('Conversation', {id: item.id, name: item.username});
+      }}
     />
   );
   const [users, setUsers] = useState<ContactUser[]>();
 
   useEffect(() => {
     const userSubscription = userService.getUser().subscribe((res: any) => {
-      socket.auth = {userId: res.userId, sessionId: res.sessionId};
+      socket.auth = {userId: res.id, sessionId: res.sessionId};
       socket.connect();
     });
 
@@ -39,7 +39,7 @@ export const ContactScreen = ({navigation}: Props) => {
 
     return () => {
       subscription.unsubscribe();
-      userSubscription.unsubscribe()
+      userSubscription.unsubscribe();
     };
   }, []);
 

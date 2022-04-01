@@ -1,10 +1,9 @@
 import AsyncStorage from '@react-native-community/async-storage';
 import {io} from 'socket.io-client';
+import {SERVER_URL} from '../../config';
 import {userService, ContactUser, messageService, Message} from '../store';
 
-const URL = 'http://192.168.1.80:5000';
-
-const socket = io(URL, {
+const socket = io(SERVER_URL, {
   autoConnect: false,
 });
 
@@ -49,6 +48,13 @@ socket.on('user disconnected', user => {
 
 socket.on('private message', (message: Message) => {
   messageService.addMessagetoUser(message.sender, message);
+});
+
+socket.on('interaction', async ({userId, lastInteractionTime}: any) => {
+  if (!userId && !lastInteractionTime) {
+    return;
+  }
+  messageService.setUserInteraction(userId, new Date(lastInteractionTime));
 });
 
 export default socket;

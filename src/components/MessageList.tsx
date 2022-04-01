@@ -1,26 +1,46 @@
 import React from 'react';
-import {ScrollView} from 'react-native';
-import {userService} from '../service/store';
+import {SectionList, View} from 'react-native';
+import {Text} from 'react-native-paper';
 
 import Message from './Message';
 
-export const MessagesList = ({userId, messages}: any) => {
+export const MessagesList = ({userInteractionTime, userId, messages}: any) => {
+  const renderItem = ({item}: any) => {
+    const date = new Date(item.createdAt);
+    const time = `${date.getHours()}:${date.getMinutes()}`;
+    const isSeen = userInteractionTime > date;
+
+    return (
+      <Message
+        key={item._id}
+        time={time}
+        isLeft={item.sender !== userId}
+        message={item.content}
+      />
+    );
+  };
 
   return (
-    <ScrollView style={{backgroundColor: 'white', flexDirection: 'column'}}>
-      {messages.map((message: any, index: number) => {
-        const date = new Date(message.createdAt);
-        const time = `${date.getHours()}:${date.getMinutes()}`;
-
-        return (
-          <Message
-            key={index}
-            time={time}
-            isLeft={message.sender !== userId}
-            message={message.content}
-          />
-        );
-      })}
-    </ScrollView>
+    <View style={{flex: 1}}>
+      {messages.length > 0 && (
+        <SectionList
+          sections={messages}
+          inverted={true}
+          data={messages}
+          renderItem={renderItem}
+          keyExtractor={(_, index) => index as unknown as string}
+          renderSectionFooter={({section: {title}}) => (
+            <View
+              style={{
+                flex: 1,
+                flexDirection: 'row',
+                justifyContent: 'center',
+              }}>
+              <Text>{title}</Text>
+            </View>
+          )}
+        />
+      )}
+    </View>
   );
 };
