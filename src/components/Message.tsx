@@ -24,7 +24,7 @@ const getPosition = (type: any, isLeft: boolean) => {
   }
 };
 
-const Message = ({time, isLeft, message}: any) => {
+const Message = ({time, isLeft, isSeen, message}: any) => {
   return (
     <View style={styles.container}>
       <View
@@ -43,6 +43,9 @@ const Message = ({time, isLeft, message}: any) => {
           </Text>
         </View>
       </View>
+      {!isLeft && (
+        <Text style={styles.status}>{isSeen ? 'Seen' : 'Not Seen'}</Text>
+      )}
     </View>
   );
 };
@@ -80,6 +83,12 @@ const styles = StyleSheet.create({
     color: 'lightgray',
     alignSelf: 'flex-end',
     fontSize: 10,
+  },
+  status: {
+    color: 'black',
+    alignSelf: 'flex-end',
+    fontSize: 10,
+    marginRight: 15,
   },
 });
 

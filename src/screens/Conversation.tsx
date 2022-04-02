@@ -45,19 +45,21 @@ export const Conversation = ({route, navigation}: any) => {
         });
 
       fetch(
-        `${SERVER_URL}/api/interaction?userId=${userId}&&targetUserId=${id}`,
+        `${SERVER_URL}/api/interaction?userId=${id}&&targetUserId=${userId}`,
       )
         .then(res => res.json())
         .then(res => {
           if (new Date(res.data?.lastInteractionTime)) {
             messageService.setUserInteraction(
               id,
-              new Date(res.data.lastInteractionTime),
+              res.data?.lastInteractionTime
+                ? new Date(res.data.lastInteractionTime)
+                : null,
             );
           }
         })
         .catch(err => {
-          console.log('Error in fetching messages->', err);
+          console.log('Error in user interactions->', err);
         });
     }
   }, [userId, id]);

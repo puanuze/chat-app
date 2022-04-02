@@ -12,7 +12,7 @@ type UserMessage = {
 };
 
 type UserInteraction = {
-  [userId: string]: Date;
+  [userId: string]: Date | null;
 };
 
 class MessageService {
@@ -74,20 +74,29 @@ class MessageService {
 
   addMessagetoUser(userId: string, message: Message) {
     const msgDate = new Date(message.createdAt).toDateString();
-    let messageSection: any = [];
+    let result: [{title: string; data: Message[]}] = [] as any;
+
     if (msgDate === this.userMessage[userId][0]?.title) {
       const messages = [message, ...this.userMessage[userId][0].data];
-      messageSection = [{title: msgDate, data: messages}];
+      const messageSection = [{title: msgDate, data: messages}];
+      result = [...messageSection, ...this.userMessage[userId].slice(1)] as any;
+    } else {
+      const messageSection = [{title: msgDate, data: [message]}];
+      result = [...messageSection, ...this.userMessage[userId]] as any;
     }
 
     this.userMessage = {
       ...this.userMessage,
-      [userId]: messageSection,
+      [userId]: result,
     };
     this.updateMessageObs();
   }
 
-  setUserInteraction(userId: string, lastInteractionTime: Date) {
+  setUserInteraction(userId: string, lastInteractionTime: Date | null) {
+    if (this.interactions[userId] && lastInteractionTime === null) {
+      return;
+    }
+
     this.interactions = {
       ...this.interactions,
       [userId]: lastInteractionTime,

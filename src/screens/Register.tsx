@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import {StyleSheet, View} from 'react-native';
 import {Text} from 'react-native-paper';
 import {Button, TextInput} from '../components';
-import { SERVER_URL } from '../config';
+import {SERVER_URL} from '../config';
 import {theme} from '../core/theme';
 import {userService} from '../service/store';
 
@@ -34,7 +34,7 @@ export const RegisterScreen = () => {
         setErrorMessage(errorResponse.message);
       }
     } catch (error) {
-      console.log(error);
+      console.log('Error in registering user->', error);
     }
   };
 

@@ -8,12 +8,14 @@ export const MessagesList = ({userInteractionTime, userId, messages}: any) => {
   const renderItem = ({item}: any) => {
     const date = new Date(item.createdAt);
     const time = `${date.getHours()}:${date.getMinutes()}`;
-    const isSeen = userInteractionTime > date;
+    const isSeen =
+      userInteractionTime && userInteractionTime > date ? true : false;
 
     return (
       <Message
         key={item._id}
         time={time}
+        isSeen={isSeen}
         isLeft={item.sender !== userId}
         message={item.content}
       />
