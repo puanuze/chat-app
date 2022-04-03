@@ -26,8 +26,12 @@ export const ContactScreen = ({navigation}: Props) => {
       }}
     />
   );
-  const [onlineUsers, setOnlineUsers] = useState<ContactUser[]>();
+  const [onlineUsersMap, setOnlineUsersMap] = useState<{[id: string]: boolean}>(
+    {},
+  );
   const [usersConnections, setUsersConnections] = useState<ContactUser[]>();
+  const [activeUsers, setActiveUsers] = useState<ContactUser[]>();
+  const [inactiveUsers, setInactiveUsers] = useState<ContactUser[]>();
   const [userId, setUserId] = useState();
 
   useEffect(() => {
@@ -35,7 +39,7 @@ export const ContactScreen = ({navigation}: Props) => {
       fetch(`${SERVER_URL}/api/user/${userId}/connections`)
         .then(res => res.json())
         .then(res => {
-          setUsersConnections(res.data);
+          userService.setConnections(res.data);
         })
         .catch(err => {
           console.log('Error in fetching connections->', err);
@@ -45,27 +49,52 @@ export const ContactScreen = ({navigation}: Props) => {
 
   useEffect(() => {
     const userSubscription = userService.getUser().subscribe((res: any) => {
+      console.log(`User with ${res.id} is ${res.username}`);
       setUserId(res.id);
-      socket.auth = {userId: res.id, sessionId: res.sessionId};
+      socket.auth = {userId, sessionId: res.sessionId};
       socket.connect();
     });
 
     const subscription = userService.getOnlineUsers().subscribe(res => {
-      setOnlineUsers(res);
+      setOnlineUsersMap(res);
     });
 
+    const connectionSubscription = userService
+      .getConnections()
+      .subscribe(res => {
+        setUsersConnections(res);
+      });
+
     return () => {
+      connectionSubscription.unsubscribe();
       subscription.unsubscribe();
       userSubscription.unsubscribe();
     };
   }, []);
+
+  useEffect(() => {
+    let onlineUsers: ContactUser[] = [];
+    let connections: ContactUser[] = [];
+
+    usersConnections?.forEach(user => {
+      if (onlineUsersMap[user.id]) {
+        onlineUsers.push(user);
+      } else {
+        connections.push(user);
+      }
+    });
+    setActiveUsers([...onlineUsers]);
+    setInactiveUsers([...connections]);
+  }, [onlineUsersMap, usersConnections]);
+
+  useEffect(() => {}, [activeUsers, inactiveUsers]);
 
   return (
     <View style={styles.container}>
       <Text style={styles.headerText}>Active Users</Text>
       <View style={{flex: 0.5}}>
         <FlatList
-          data={onlineUsers}
+          data={activeUsers}
           renderItem={renderItem}
           keyExtractor={item => item.id}
         />
@@ -73,7 +102,7 @@ export const ContactScreen = ({navigation}: Props) => {
       <Text style={styles.headerText}>Previous Connections</Text>
       <View style={{flex: 0.5}}>
         <FlatList
-          data={usersConnections}
+          data={inactiveUsers}
           renderItem={renderItem}
           keyExtractor={item => item.id}
         />

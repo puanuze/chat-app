@@ -8,21 +8,15 @@ const socket = io(SERVER_URL, {
 });
 
 socket.on('users', (users: ContactUser[]) => {
-  let userList: ContactUser[] = [];
-  let activeUsers: ContactUser[] = [];
-
-  userList = users.sort((a, b) => {
-    if (a.username < b.username) return -1;
-    return a.username > b.username ? 1 : 0;
-  });
-
-  userList.forEach(user => {
-    if (user.id !== socket.id) {
-      activeUsers.push(user);
+  let onlineUsersMap: {[id: string]: boolean} = {};
+  users?.forEach(user => {
+    onlineUsersMap[user.id] = true;
+    if (!userService.isUserConnected(user.id)) {
+      userService.addConnection(user);
     }
   });
 
-  userService.setOnlineUsers(activeUsers);
+  userService.setOnlineUsers(onlineUsersMap);
 });
 
 socket.on('session', ({sessionId, userId, username}) => {
@@ -39,11 +33,14 @@ socket.on('session', ({sessionId, userId, username}) => {
 });
 
 socket.on('user connected', user => {
+  if (!userService.isUserConnected(user.id)) {
+    userService.addConnection(user);
+  }
   userService.addOnlineUser(user);
 });
 
 socket.on('user disconnected', user => {
-  userService.removeOnlineUser(user);
+  userService.removeOnlineUser(user.id);
 });
 
 socket.on('private message', (message: Message) => {

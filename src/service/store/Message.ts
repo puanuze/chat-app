@@ -1,4 +1,7 @@
 import {Subject} from 'rxjs';
+import {SERVER_URL} from '../../config';
+import socket from '../socket';
+import {userService} from './User';
 
 export type Message = {
   content: string;
@@ -48,6 +51,10 @@ class MessageService {
     this.userInteraction$.next(null);
   }
 
+  userHasConversation(userId: string) {
+    return this.userMessage[userId] && this.userMessage[userId].length > 0;
+  }
+
   setMessageForUser(userId: string, messages: Message[]) {
     const messageSection: any = {};
     messages.forEach(message => {
@@ -76,13 +83,32 @@ class MessageService {
     const msgDate = new Date(message.createdAt).toDateString();
     let result: [{title: string; data: Message[]}] = [] as any;
 
-    if (msgDate === this.userMessage[userId][0]?.title) {
+    if (
+      this.userMessage[userId] &&
+      msgDate === this.userMessage[userId][0]?.title
+    ) {
       const messages = [message, ...this.userMessage[userId][0].data];
       const messageSection = [{title: msgDate, data: messages}];
       result = [...messageSection, ...this.userMessage[userId].slice(1)] as any;
     } else {
       const messageSection = [{title: msgDate, data: [message]}];
-      result = [...messageSection, ...this.userMessage[userId]] as any;
+      result = [...messageSection, ...(this.userMessage[userId] || [])] as any;
+    }
+
+    if (!userService.isUserConnected(userId)) {
+      fetch(`${SERVER_URL}/api/user/${userId}`)
+        .then(res => res.json())
+        .then(res => {
+          const user = res.data;
+          userService.addConnection(user);
+        });
+    }
+
+    if (this.activeUserId === userId) {
+      socket.emit('interaction', {
+        userId: userService.getUserId(),
+        targetUserId: userId,
+      });
     }
 
     this.userMessage = {
