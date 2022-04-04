@@ -17,6 +17,8 @@ class UserService {
   private onlineUsersMap: {[id: string]: boolean} = {};
   private userConnectionMap: {[id: string]: boolean} = {};
   private connections: ContactUser[] = [];
+  private selectedUserId: string | null = null;
+  private readonly selectedUsersStatus$ = new BehaviorSubject(false);
   private readonly user$ = new BehaviorSubject(this.user);
   private readonly connections$ = new BehaviorSubject(this.connections);
   private readonly onlineUsersMap$ = new BehaviorSubject(this.onlineUsersMap);
@@ -35,6 +37,16 @@ class UserService {
 
   getOnlineUsers() {
     return this.onlineUsersMap$.asObservable();
+  }
+
+  setSelectedUserId(userId: string | null) {
+    this.selectedUserId = userId;
+    const userStatus = userId && this.onlineUsersMap[userId] ? true : false;
+    this.selectedUsersStatus$.next(userStatus);
+  }
+
+  subscribeToSelectedUsersStatus() {
+    return this.selectedUsersStatus$.asObservable();
   }
 
   setUser(user: User) {
@@ -105,6 +117,10 @@ class UserService {
 
   addOnlineUser(user: ContactUser) {
     this.onlineUsersMap = {...this.onlineUsersMap, [user.id]: true};
+    if (user.id === this.selectedUserId) {
+      this.selectedUsersStatus$.next(true);
+    }
+
     this.updateOnlineUsersObs();
     if (!this.userConnectionMap[user.id]) {
       this.addConnection({id: user.id, username: user.username});
@@ -113,6 +129,10 @@ class UserService {
 
   removeOnlineUser(userId: string) {
     this.onlineUsersMap = {...this.onlineUsersMap, [userId]: false};
+    if (userId === this.selectedUserId) {
+      this.selectedUsersStatus$.next(false);
+    }
+
     if (!this.userConnectionMap[userId]) {
       userService.removeConnection(userId);
     }

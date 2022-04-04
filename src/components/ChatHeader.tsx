@@ -2,7 +2,7 @@ import React from 'react';
 import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import {IconButton} from 'react-native-paper';
 
-export const ChatHeader = ({name, onBackPress}: any) => {
+export const ChatHeader = ({name, status, onBackPress}: any) => {
   return (
     <View style={styles.container}>
       <TouchableOpacity onPress={onBackPress}>
@@ -12,7 +12,9 @@ export const ChatHeader = ({name, onBackPress}: any) => {
         <TouchableOpacity>
           <View>
             <Text style={styles.username}>{name}</Text>
-            <Text style={styles.onlineStatus}>{'Online'}</Text>
+            <Text style={styles.onlineStatus}>
+              {status ? 'Online' : 'Offline'}
+            </Text>
           </View>
         </TouchableOpacity>
       </View>

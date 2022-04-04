@@ -14,6 +14,7 @@ export const Conversation = ({route, navigation}: any) => {
     [] as any,
   );
   const [userId, setUserId] = useState<string>();
+  const [userStatus, setUserStatus] = useState<Boolean>(false);
   const [userInteractionTime, setUserInteractionTime] = useState<Date | null>(
     null,
   );
@@ -84,6 +85,12 @@ export const Conversation = ({route, navigation}: any) => {
       setMessages(res);
     });
     messageService.setActiveUserId(id);
+    userService.setSelectedUserId(id);
+    const statusSubscription = userService
+      .subscribeToSelectedUsersStatus()
+      .subscribe(res => {
+        setUserStatus(res);
+      });
 
     const interactionSubscription = messageService
       .subscribeToUserInteraction()
@@ -94,13 +101,20 @@ export const Conversation = ({route, navigation}: any) => {
     return () => {
       subscription.unsubscribe();
       messageService.setActiveUserId(null);
+      userService.setSelectedUserId(null);
+      statusSubscription.unsubscribe();
       interactionSubscription.unsubscribe();
     };
   }, []);
 
   return (
     <View style={{flex: 1, flexDirection: 'column'}}>
-      <ChatHeader style={{flex: 0.1}} name={name} onBackPress={onBackPress} />
+      <ChatHeader
+        style={{flex: 0.1}}
+        status={userStatus}
+        name={name}
+        onBackPress={onBackPress}
+      />
       <MessagesList
         style={{flex: 0.8}}
         userInteractionTime={userInteractionTime}
