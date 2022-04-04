@@ -97,6 +97,7 @@ class MessageService {
 
     if (this.activeUserId === userId) {
       socket.emit('interaction', {
+        userId: userService.getUserId(),
         targetUserId: userId,
       });
     }

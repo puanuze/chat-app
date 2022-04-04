@@ -39,7 +39,7 @@ export const ContactScreen = ({navigation}: Props) => {
       fetch(`${SERVER_URL}/api/user/${userId}/connections`)
         .then(res => res.json())
         .then(res => {
-          userService.setConnections(res.data);
+          userService.setConnections(res.data ?? []);
           socket.auth = {userId};
           socket.connect();
         })
@@ -96,7 +96,7 @@ export const ContactScreen = ({navigation}: Props) => {
           keyExtractor={item => item.id}
         />
       </View>
-      <Text style={styles.headerText}>Previous Connections</Text>
+      <Text style={styles.headerText}>Connected Users</Text>
       <View style={{flex: 0.5}}>
         <FlatList
           data={inactiveUsers}

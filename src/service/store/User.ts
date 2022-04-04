@@ -46,6 +46,10 @@ class UserService {
     return this.userConnectionMap[userId];
   }
 
+  isUserOnline(userId: string) {
+    return this.onlineUsersMap[userId];
+  }
+
   setConnections(users: ContactUser[]) {
     let connectionMap: any = {};
     users?.forEach(user => {
@@ -57,7 +61,6 @@ class UserService {
   }
 
   addConnection(user: ContactUser) {
-    this.userConnectionMap = {...this.userConnectionMap, [user.id]: true};
     this.connections = [...this.connections, user];
     this.connections$.next(this.connections);
   }

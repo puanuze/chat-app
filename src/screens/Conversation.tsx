@@ -29,11 +29,16 @@ export const Conversation = ({route, navigation}: any) => {
       content: message,
       to: id,
     });
+    if (!userService.isUserConnected(id)) {
+      userService.addUserConnection(id);
+    }
   };
 
   useEffect(() => {
     if (id && userId) {
-      socket.emit('interaction', {targetUserId: id});
+      if (userService.isUserConnected(id)) {
+        socket.emit('interaction', {userId, targetUserId: id});
+      }
 
       fetch(`${SERVER_URL}/api/message?ids=${JSON.stringify([userId, id])}`)
         .then(res => res.json())

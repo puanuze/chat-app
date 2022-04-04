@@ -42,15 +42,19 @@ socket.on('user disconnected', user => {
 socket.on('private message', (message: Message) => {
   if (!userService.isUserConnected(message.sender)) {
     socket.emit('interaction', {
+      userId: (socket.auth as any).userId,
       targetUserId: message.sender,
       isInitialization: true,
     });
-    fetch(`${SERVER_URL}/api/user/${message.sender}`)
-      .then(res => res.json())
-      .then(res => {
-        const user = res.data;
-        userService.addConnection(user);
-      });
+    if (!userService.isUserOnline(message.sender)) {
+      fetch(`${SERVER_URL}/api/user/${message.sender}`)
+        .then(res => res.json())
+        .then(res => {
+          const user = res.data;
+          userService.addConnection(user);
+        });
+    }
+    userService.addUserConnection(message.sender);
   }
   messageService.addMessagetoUser(message.sender, message);
 });
