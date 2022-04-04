@@ -95,18 +95,8 @@ class MessageService {
       result = [...messageSection, ...(this.userMessage[userId] || [])] as any;
     }
 
-    if (!userService.isUserConnected(userId)) {
-      fetch(`${SERVER_URL}/api/user/${userId}`)
-        .then(res => res.json())
-        .then(res => {
-          const user = res.data;
-          userService.addConnection(user);
-        });
-    }
-
     if (this.activeUserId === userId) {
       socket.emit('interaction', {
-        userId: userService.getUserId(),
         targetUserId: userId,
       });
     }

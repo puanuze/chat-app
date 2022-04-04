@@ -4,7 +4,7 @@ import {Text} from 'react-native-paper';
 import {Button, TextInput} from '../components';
 import {SERVER_URL} from '../config';
 import {theme} from '../core/theme';
-import {userService} from '../service/store';
+import {User, userService} from '../service/store';
 
 export const RegisterScreen = () => {
   const [username, setUsername] = useState('');
@@ -28,7 +28,7 @@ export const RegisterScreen = () => {
         const {
           data: {_id: userId},
         } = await res.json();
-        userService.setUser({id: userId, isLoggedIn: true} as any);
+        userService.setUser({id: userId, isLoggedIn: true} as User);
       } else {
         let errorResponse = await res.json();
         setErrorMessage(errorResponse.message);

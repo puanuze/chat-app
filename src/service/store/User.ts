@@ -1,10 +1,9 @@
 import {BehaviorSubject} from 'rxjs';
 import {messageService} from './Message';
 
-type User = {
+export type User = {
   id: string;
   username: string;
-  sessionId: string;
   isLoggedIn: boolean;
 };
 
@@ -50,11 +49,9 @@ class UserService {
   setConnections(users: ContactUser[]) {
     let connectionMap: any = {};
     users?.forEach(user => {
-      messageService.addMessagetoUser(user.id, [] as any);
       connectionMap[user.id] = true;
     });
-    this.setConnections(connectionMap);
-
+    this.setUserConnection(connectionMap);
     this.connections = [...users];
     this.connections$.next(this.connections);
   }
@@ -83,6 +80,10 @@ class UserService {
     this.userConnectionMap = {...userConnection};
   }
 
+  addUserConnection(userId: string) {
+    this.userConnectionMap = {...this.userConnectionMap, [userId]: true};
+  }
+
   loginUser() {
     this.user = {...this.user, isLoggedIn: true};
     this.updateUserObs();
@@ -109,7 +110,7 @@ class UserService {
 
   removeOnlineUser(userId: string) {
     this.onlineUsersMap = {...this.onlineUsersMap, [userId]: false};
-    if (!messageService.userHasConversation(userId)) {
+    if (!this.userConnectionMap[userId]) {
       userService.removeConnection(userId);
     }
     this.updateOnlineUsersObs();

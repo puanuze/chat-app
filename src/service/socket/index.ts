@@ -10,6 +10,9 @@ const socket = io(SERVER_URL, {
 socket.on('users', (users: ContactUser[]) => {
   let onlineUsersMap: {[id: string]: boolean} = {};
   users?.forEach(user => {
+    if (user.id === (socket.auth as any).userId) {
+      return;
+    }
     onlineUsersMap[user.id] = true;
     if (!userService.isUserConnected(user.id)) {
       userService.addConnection(user);
@@ -19,23 +22,16 @@ socket.on('users', (users: ContactUser[]) => {
   userService.setOnlineUsers(onlineUsersMap);
 });
 
-socket.on('session', ({sessionId, userId, username}) => {
-  AsyncStorage.setItem(
-    'user-session',
-    JSON.stringify({sessionId, userId, username}),
-  );
+socket.on('session', ({userId, username}) => {
+  AsyncStorage.setItem('user-session', JSON.stringify({id: userId, username}));
   userService.setUser({
     id: userId,
-    sessionId,
     username,
     isLoggedIn: true,
   });
 });
 
 socket.on('user connected', user => {
-  if (!userService.isUserConnected(user.id)) {
-    userService.addConnection(user);
-  }
   userService.addOnlineUser(user);
 });
 
@@ -44,6 +40,18 @@ socket.on('user disconnected', user => {
 });
 
 socket.on('private message', (message: Message) => {
+  if (!userService.isUserConnected(message.sender)) {
+    socket.emit('interaction', {
+      targetUserId: message.sender,
+      isInitialization: true,
+    });
+    fetch(`${SERVER_URL}/api/user/${message.sender}`)
+      .then(res => res.json())
+      .then(res => {
+        const user = res.data;
+        userService.addConnection(user);
+      });
+  }
   messageService.addMessagetoUser(message.sender, message);
 });
 
@@ -51,6 +59,9 @@ socket.on('interaction', async ({userId, lastInteractionTime}: any) => {
   if (!userId && !lastInteractionTime) {
     return;
   }
+  if (!userService.isUserConnected(userId)) {
+  }
+
   messageService.setUserInteraction(userId, new Date(lastInteractionTime));
 });
 

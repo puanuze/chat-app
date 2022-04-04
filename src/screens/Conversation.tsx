@@ -33,7 +33,7 @@ export const Conversation = ({route, navigation}: any) => {
 
   useEffect(() => {
     if (id && userId) {
-      socket.emit('interaction', {userId, targetUserId: id});
+      socket.emit('interaction', {targetUserId: id});
 
       fetch(`${SERVER_URL}/api/message?ids=${JSON.stringify([userId, id])}`)
         .then(res => res.json())

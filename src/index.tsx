@@ -5,7 +5,6 @@ import {ContactNavigator} from './navigators/Contact';
 import {userService} from './service/store';
 import {AuthNavigator} from './navigators/Auth';
 import AsyncStorage from '@react-native-community/async-storage';
-import socket from './service/socket';
 import {View} from 'react-native';
 
 const App = () => {
@@ -21,11 +20,6 @@ const App = () => {
     AsyncStorage.getItem('user-session').then((res: any) => {
       if (res) {
         userService.setUser({...JSON.parse(res), isLoggedIn: true});
-        socket.auth = {
-          userId: res.userId,
-          sessionId: res.sessionId,
-          username: res.username,
-        };
       }
       setInitializingState(false);
     });

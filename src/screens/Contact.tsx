@@ -40,6 +40,8 @@ export const ContactScreen = ({navigation}: Props) => {
         .then(res => res.json())
         .then(res => {
           userService.setConnections(res.data);
+          socket.auth = {userId};
+          socket.connect();
         })
         .catch(err => {
           console.log('Error in fetching connections->', err);
@@ -49,10 +51,7 @@ export const ContactScreen = ({navigation}: Props) => {
 
   useEffect(() => {
     const userSubscription = userService.getUser().subscribe((res: any) => {
-      console.log(`User with ${res.id} is ${res.username}`);
       setUserId(res.id);
-      socket.auth = {userId, sessionId: res.sessionId};
-      socket.connect();
     });
 
     const subscription = userService.getOnlineUsers().subscribe(res => {
@@ -86,8 +85,6 @@ export const ContactScreen = ({navigation}: Props) => {
     setActiveUsers([...onlineUsers]);
     setInactiveUsers([...connections]);
   }, [onlineUsersMap, usersConnections]);
-
-  useEffect(() => {}, [activeUsers, inactiveUsers]);
 
   return (
     <View style={styles.container}>
