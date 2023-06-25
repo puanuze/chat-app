@@ -1,14 +1,16 @@
-import AsyncStorage from '@react-native-community/async-storage';
-import {io} from 'socket.io-client';
-import {SERVER_URL} from '../../config';
-import {userService, ContactUser, messageService, Message} from '../store';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { io } from 'socket.io-client';
+import { SERVER_URL } from '../../config';
+import { userService, ContactUser, messageService, Message } from '../store';
+
+console.log(SERVER_URL)
 
 const socket = io(SERVER_URL, {
   autoConnect: false,
 });
 
 socket.on('users', (users: ContactUser[]) => {
-  let onlineUsersMap: {[id: string]: boolean} = {};
+  let onlineUsersMap: { [id: string]: boolean } = {};
   users?.forEach(user => {
     if (user.id === (socket.auth as any).userId) {
       return;
@@ -22,8 +24,8 @@ socket.on('users', (users: ContactUser[]) => {
   userService.setOnlineUsers(onlineUsersMap);
 });
 
-socket.on('session', ({userId, username}) => {
-  AsyncStorage.setItem('user-session', JSON.stringify({id: userId, username}));
+socket.on('session', ({ userId, username }) => {
+  AsyncStorage.setItem('user-session', JSON.stringify({ id: userId, username }));
   userService.setUser({
     id: userId,
     username,
@@ -59,7 +61,7 @@ socket.on('private message', (message: Message) => {
   messageService.addMessagetoUser(message.sender, message);
 });
 
-socket.on('interaction', async ({userId, lastInteractionTime}: any) => {
+socket.on('interaction', async ({ userId, lastInteractionTime }: any) => {
   if (!userId && !lastInteractionTime) {
     return;
   }

@@ -4,7 +4,7 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {ContactNavigator} from './navigators/Contact';
 import {userService} from './service/store';
 import {AuthNavigator} from './navigators/Auth';
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {View} from 'react-native';
 
 const App = () => {
